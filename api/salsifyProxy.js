@@ -1,8 +1,6 @@
-// api/salsifyProxy.js
+import axios from 'axios';
 
-const axios = require('axios');
-
-const API_KEY = process.env.SALSIFY_API_KEY; // Make sure this environment variable is set in Vercel
+const API_KEY = process.env.SALSIFY_API_KEY;
 const BASE_URL = 'https://app.salsify.com/api/v1/products';
 
 export default async function handler(req, res) {
@@ -57,7 +55,12 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: `No product found for item ${itemNumber}` });
     }
   } catch (error) {
-    console.error('Error:', error.response ? error.response.data : error.message);
-    res.status(500).json({ error: 'Internal server error', message: error.message });
+    console.error('Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    res.status(500).json({ 
+      error: 'Internal server error', 
+      message: error.message, 
+      stack: error.stack,
+      config: error.config ? JSON.stringify(error.config) : 'No config available'
+    });
   }
 }
